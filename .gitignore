@@ -1,0 +1,17 @@
+# 屏蔽版本控制的文件
+
+## 虚拟解释环境
+.venv/
+## 笔记本文件夹（草稿用）
+notebook/
+
+## UV缓存文件
+.uv-cache/
+## Python缓存文件【递归目录】
+__pycache__/
+## Python构建文件【递归目录】（.pyc/.pyo/.pyd）
+*.py[cod]
+*.egg-info/
+
+### Pytest缓存文件【递归目录】
+.pytest_cache/
