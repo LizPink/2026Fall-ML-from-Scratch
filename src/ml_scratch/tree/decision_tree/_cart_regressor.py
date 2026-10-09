@@ -9,9 +9,10 @@ class CARTRegressor:
     1.采用SST（Sum of Squares of Total）作为节点分裂的标准
     2.采用MSE作为模型损失函数——叶子节点因此预测为样本标签的平均值
     """
-    def __init__(self, max_depth:int=3):
+    def __init__(self, max_depth:int=2, min_samples_split:int=2):
         self.root:None|Node = None
         self.max_depth:int  = max_depth
+        self.min_samples_split:int = min_samples_split
 
 
     def fit(self, X:NDArray, y:NDArray) -> None:
@@ -65,6 +66,9 @@ class CARTRegressor:
         """
         # 分裂是否达到最大深度
         if depth >= self.max_depth:
+            return True
+        # 样本是否足够多
+        if y.shape[0] < self.min_samples_split:
             return True
         # 样本标签是否足够纯净
         if np.unique(y).size == 1:

@@ -8,9 +8,10 @@ class CARTClassifier:
     1.采用Gini不纯度决定分裂策略
     2.采用0-1损失作为全局损失函数——叶子节点采用多数类标签作为预测标签
     """
-    def __init__(self, max_depth:int=3):
+    def __init__(self, max_depth:int=2, min_samples_split:int=2):
         self.root:None|Node = None
         self.max_depth:int  = max_depth
+        self.min_samples_split = min_samples_split
 
 
     def fit(self, X:NDArray, y:NDArray) -> None:
@@ -65,13 +66,17 @@ class CARTClassifier:
         # 分裂是否达到最大深度
         if depth >= self.max_depth:
             return True
-        
+        # 样本是否足够多
+        if y.shape[0] < self.min_samples_split:
+            return True
         # 样本标签是否足够纯净
-        samples_are_pure = np.unique(y).size == 1
+        if np.unique(y).size == 1:
+            return True
         # 样本特征是否完全相同
-        samples_are_identical = np.unique(X, axis=0).shape[0] == 1
+        if np.unique(X, axis=0).shape[0] == 1:
+            return True
 
-        return bool(samples_are_pure or samples_are_identical)
+        return False
 
 
     def _make_leaf(self, y:NDArray) -> Node:
