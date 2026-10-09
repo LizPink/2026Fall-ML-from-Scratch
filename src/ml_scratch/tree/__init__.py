@@ -1,5 +1,7 @@
-"""Tree-based machine learning algorithms."""
+""" Tree-based machine learning algorithms. """
 
-from ._decision_tree import Node, CARTClassifier
+from .decision_tree._node import Node
+from .decision_tree._cart_calssifier import CARTClassifier
+from .decision_tree._cart_regressor import CARTRegressor
 
-__all__ = ["Node", "CARTClassifier"]
+__all__ = ["Node", "CARTClassifier", "CARTRegressor"]

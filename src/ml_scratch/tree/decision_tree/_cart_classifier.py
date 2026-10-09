@@ -1,22 +1,7 @@
-""" 决策树算法的实现 """
-
 import numpy as np
-from dataclasses import dataclass
 from numpy.typing import NDArray
+from ._node import Node
 
-@dataclass
-class Node:
-    """ 树类模型的基础节点
-    Attributes
-    ----------
-    value
-        如果有则代表这是一个叶子节点，则value为预测值
-    """
-    feature: None|int = None
-    threshold: None|float = None
-    left: None|Node = None
-    right: None|Node = None
-    value: None|int|float = None
 
 class CARTClassifier:
     """ CART Decision Tree Classifier
@@ -24,8 +9,8 @@ class CARTClassifier:
     2.采用0-1损失作为全局损失函数——叶子节点采用多数类标签作为预测标签
     """
     def __init__(self, max_depth:int=3):
-        self.root: None|Node = None
-        self.max_depth = max_depth
+        self.root:None|Node = None
+        self.max_depth:int  = max_depth
 
 
     def fit(self, X:NDArray, y:NDArray) -> None:
