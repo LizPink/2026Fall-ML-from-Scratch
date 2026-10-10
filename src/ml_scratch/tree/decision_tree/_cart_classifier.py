@@ -8,10 +8,20 @@ class CARTClassifier:
     1.采用Gini不纯度决定分裂策略
     2.采用0-1损失作为全局损失函数——叶子节点采用多数类标签作为预测标签
     """
-    def __init__(self, max_depth:int=2, min_samples_split:int=2):
-        self.root:None|Node = None
-        self.max_depth:int  = max_depth
-        self.min_samples_split = min_samples_split
+    def __init__(self, max_depth:None|int=2, min_samples_split:None|int=10, random_state:None|int=None, max_features:None|int=None):
+        """ 初始化一个CART算法的决策分类树
+        Attributes
+        ----------
+        random_state:
+            为了配合RandomForest的随机性，用于控制每棵树的随机行为，与max_features等属性有关。如果为None表示不启用随机性。
+        max_features:
+            为了配合RandomForest的随机性，每次节点分裂时，随机选择的特征数，如果为None就是表示全量特征参与。
+        """
+        self.root               = None
+        self.max_depth          = max_depth
+        self.min_samples_split  = min_samples_split
+        self.rng                = np.random.default_rng(random_state) if random_state is not None else None
+        self.max_features       = max_features
 
 
     def fit(self, X:NDArray, y:NDArray) -> None:
@@ -64,10 +74,10 @@ class CARTClassifier:
         """ 判断一个节点是否需要分裂
         """
         # 分裂是否达到最大深度
-        if depth >= self.max_depth:
+        if self.max_depth is not None and depth >= self.max_depth:
             return True
         # 样本是否足够多
-        if y.shape[0] < self.min_samples_split:
+        if self.min_samples_split is not None and y.shape[0] < self.min_samples_split:
             return True
         # 样本标签是否足够纯净
         if np.unique(y).size == 1:
@@ -88,6 +98,18 @@ class CARTClassifier:
         return Node(value=majority_class)
 
 
+    def _sample_features(self, n_features:int) -> NDArray:
+        """ 返回随机采样的候选特征列
+        """
+        assert self.rng is not None
+
+        if self.max_features is None:
+            return np.arange(n_features)
+        
+        sampled_features = self.rng.choice(range(n_features), n_features, replace=False)
+        return sampled_features
+
+
     def _best_split(self, X:NDArray, y:NDArray) -> tuple[int, float]:
         """ 依次搜索特征和阈值，进行评分，记录并更新评分最高的（特征，阈值）组合
         """
@@ -95,7 +117,7 @@ class CARTClassifier:
         best_feature = None
         best_threshold = None
 
-        for feature in range(X.shape[1]):
+        for feature in self._sample_features(X.shape[1]):
             values = np.unique(X[:,feature], sorted=True)
             thresholds = (values[:-1] + values[1:]) / 2
 
