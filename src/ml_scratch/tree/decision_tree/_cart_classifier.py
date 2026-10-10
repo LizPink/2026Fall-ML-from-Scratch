@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.typing import NDArray
-from ._node import Node
+from ..tree_node._node import Node
 
 
 class CARTClassifier:
